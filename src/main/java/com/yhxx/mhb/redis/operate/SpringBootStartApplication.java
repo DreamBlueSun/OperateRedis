@@ -1,4 +1,4 @@
-package com.yhxx.mhb.demo;
+package com.yhxx.mhb.redis.operate;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,7 +1,7 @@
-package com.yhxx.mhb.demo.Controller;
+package com.yhxx.mhb.redis.operate.Controller;
 
-import com.yhxx.mhb.demo.constant.ReturnValueConstant;
-import com.yhxx.mhb.demo.redis.client.RedisClient;
+import com.yhxx.mhb.redis.operate.constant.ReturnValueConstant;
+import com.yhxx.mhb.redis.operate.redis.client.RedisClient;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;

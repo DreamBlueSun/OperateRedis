@@ -1,4 +1,4 @@
-package com.yhxx.mhb.demo.redis.annotation;
+package com.yhxx.mhb.redis.operate.redis.annotation;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

@@ -1,4 +1,4 @@
-package com.yhxx.mhb.demo.constant;
+package com.yhxx.mhb.redis.operate.constant;
 
 /**
  * @author MaoHangBin

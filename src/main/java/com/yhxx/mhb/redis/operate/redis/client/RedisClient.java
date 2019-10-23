@@ -1,6 +1,6 @@
-package com.yhxx.mhb.demo.redis.client;
+package com.yhxx.mhb.redis.operate.redis.client;
 
-import com.yhxx.mhb.demo.redis.annotation.SkipRedis;
+import com.yhxx.mhb.redis.operate.redis.annotation.SkipRedis;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
