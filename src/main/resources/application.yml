@@ -1,0 +1,5 @@
+redis:
+  host: 10.50.13.36
+  port: 6379
+  password:
+  timeout: 10000
