@@ -1,10 +1,11 @@
 package com.yhxx.mhb.redis.operate.redis.client;
 
 import com.yhxx.mhb.redis.operate.redis.annotation.SkipRedis;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -13,45 +14,83 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 @Component
-public class RedisClient implements RedisClientInterface {
-    @Autowired
+public class RedisHelper {
+
     private JedisPool jedisPool;
 
-    public void setJedisPool(JedisPool jedisPool) {
-        this.jedisPool = jedisPool;
-    }
+    private String lastHost;
 
-    @Override
-    public Jedis getJedis() {
+    private int lastPort;
+
+    public Jedis getJedis(JedisPoolConfig jedisPoolConfig, String host, int port) {
+        checkJedisPool(jedisPoolConfig, host, port);
         return jedisPool.getResource();
     }
 
-    @Override
-    public void closeJedis(Jedis jedis) {
-        jedis.close();
+    public Jedis getJedis(JedisPoolConfig jedisPoolConfig, String host, int port, String password) {
+        checkJedisPool(jedisPoolConfig, host, port, password);
+        return jedisPool.getResource();
     }
 
-    @Override
+    public void checkJedisPool(JedisPoolConfig jedisPoolConfig, String host, int port) {
+        if (jedisPool == null) {
+            setJedisPool(jedisPoolConfig, host, port);
+        } else {
+            if (!StringUtils.equals(lastHost, host) || lastPort != port) {
+                setJedisPool(jedisPoolConfig, host, port);
+            }
+        }
+    }
+
+    public void checkJedisPool(JedisPoolConfig jedisPoolConfig, String host, int port, String password) {
+        if (jedisPool == null) {
+            setJedisPool(jedisPoolConfig, host, port, password);
+        } else {
+            if (!StringUtils.equals(lastHost, host) || lastPort != port) {
+                setJedisPool(jedisPoolConfig, host, port, password);
+            }
+        }
+    }
+
+    private void setJedisPool(JedisPoolConfig jedisPoolConfig, String host, int port) {
+        jedisPool = new JedisPool(jedisPoolConfig, host, port, getTimeOut(jedisPoolConfig));
+        lastHost = host;
+        lastPort = port;
+    }
+
+    private void setJedisPool(JedisPoolConfig jedisPoolConfig, String host, int port, String password) {
+        jedisPool = new JedisPool(jedisPoolConfig, host, port, getTimeOut(jedisPoolConfig), password);
+        lastHost = host;
+        lastPort = port;
+    }
+
+    private int getTimeOut(JedisPoolConfig jedisPoolConfig) {
+        Long maxWaitMillis = jedisPoolConfig.getMaxWaitMillis();
+        return maxWaitMillis.intValue();
+    }
+
+    public void closeJedis(Jedis jedis) {
+        if (jedis != null) {
+            jedis.close();
+        }
+    }
+
     public String set(String key, String value, Jedis jedis) {
         return jedis.set(key, value);
     }
 
-    @Override
     public String set(String key, String value, String nxxx, String expx, long time, Jedis jedis) {
         return jedis.set(key, value, nxxx, expx, time);
     }
 
-    @Override
     public String get(String key, Jedis jedis) {
         return jedis.get(key);
     }
 
-    @Override
     public Long hSet(String key, String field, String value, Jedis jedis) {
         return jedis.hset(key, field, value);
     }
 
-    @Override
     public String hSet(String key, Object object, Jedis jedis) {
         Class<?> aClass = object.getClass();
         Field[] fields = aClass.getDeclaredFields();
@@ -83,12 +122,10 @@ public class RedisClient implements RedisClientInterface {
         return null;
     }
 
-    @Override
     public String hGet(String key, String filed, Jedis jedis) {
         return jedis.hget(key, filed);
     }
 
-    @Override
     public <T> T hGet(String key, Class<T> clazz, Jedis jedis) {
         //创建对象
         T t = null;
@@ -125,17 +162,14 @@ public class RedisClient implements RedisClientInterface {
         return t;
     }
 
-    @Override
     public Long expire(String key, int seconds, Jedis jedis) {
         return jedis.expire(key, seconds);
     }
 
-    @Override
     public Long del(String key, Jedis jedis) {
         return jedis.del(key);
     }
 
-    @Override
     public Long hDel(String key, String[] fields, Jedis jedis) {
         return jedis.hdel(key, fields);
     }

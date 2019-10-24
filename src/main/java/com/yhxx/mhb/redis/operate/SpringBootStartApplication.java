@@ -4,11 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * @PackageName: com.yhxx.mhb.demo
- * @Description:
- * @auther: maohangbin
- * @Date: 2019/7/9 16:55
- */
+ * @author MaoHangBin
+ * @description
+ * @date 2019/7/9 16:55
+ **/
 
 @SpringBootApplication
 public class SpringBootStartApplication {
