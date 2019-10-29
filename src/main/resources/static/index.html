@@ -7,14 +7,65 @@
     <script type="text/javascript" src="js/path.js"></script>
 </head>
 <body>
-<input type="text" id="key">
-<button type="button" id="get">get</button>
+<div id="div_connect">
+    <input type="text" id="host">
+    <input type="text" id="port">
+    <input type="text" id="password">
+    <button type="button" id="connect">connect</button>
+</div>
+<div id="div_disconnect" style="display: none">
+    <button type="button" id="disconnect">disconnect</button>
+</div>
+<div id="div_operation" style="display: none">
+    <input type="text" id="key">
+    <button type="button" id="get">get</button>
+</div>
 </body>
 <script type="text/javascript">
+    $("#connect").click(function () {
+        var host = nextPath + $("#host").val();
+        var port = nextPath + $("#port").val();
+        var password = nextPath + $("#password").val();
+        var url = pathHead + "operateRedis/connect" + host + port + password;
+        $.ajax({
+            url: url,
+            type: "GET",
+            success: function (data) {
+                alert(data);
+                if (data == "连接成功") {
+                    $("#div_connect").hide();
+                    $("#div_disconnect").show();
+                    $("#div_operation").show();
+                }
+            }
+        });
+    });
+    $("#disconnect").click(function () {
+        var url = pathHead + "operateRedis/disconnect";
+        $.ajax({
+            url: url,
+            type: "GET",
+            success: function (data) {
+                alert(data);
+                if (data == "成功") {
+                    $("#div_disconnect").hide();
+                    $("#div_operation").hide();
+                    $("#div_connect").show();
+                }
+            }
+        });
+    });
+
     $("#get").click(function () {
-        var url = pathHead + "operateRedis/getValue?key=" + $("#key").val();
-        window.open(url);
-        // window.location.href = url;
+        var key = nextPath + $("#key").val();
+        var url = pathHead + "operateRedis/get" + key;
+        $.ajax({
+            url: url,
+            type: "GET",
+            success: function (data) {
+                alert(data);
+            }
+        });
     });
 </script>
 </html>

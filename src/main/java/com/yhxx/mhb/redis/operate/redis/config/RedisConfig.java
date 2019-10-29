@@ -29,4 +29,8 @@ public class RedisConfig {
         jedisPoolConfig.setMaxWaitMillis(timeout);
         return jedisPoolConfig;
     }
+
+    public int getTimeout() {
+        return timeout;
+    }
 }
