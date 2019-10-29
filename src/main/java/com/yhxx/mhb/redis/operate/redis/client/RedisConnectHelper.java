@@ -94,6 +94,10 @@ public class RedisConnectHelper {
         }
     }
 
+    public int getType() {
+        return this.type;
+    }
+
     public Jedis getJedis() {
         return jedisPool.getResource();
     }
@@ -108,8 +112,18 @@ public class RedisConnectHelper {
         }
     }
 
-    public void closeJedisCluder() {
+    public void disconnect() {
+        if (type == 1) {
+            closeJedisPool();
+        }
+        if (type == 2) {
+            closeJedisCluder();
+        }
+    }
+
+    private void closeJedisCluder() {
         if (jedisCluster != null) {
+            type = 0;
             try {
                 jedisCluster.close();
             } catch (IOException e) {
@@ -118,12 +132,9 @@ public class RedisConnectHelper {
         }
     }
 
-    public void disconnect() {
-        closeJedisPool();
-    }
-
     private void closeJedisPool() {
         if (jedisPool != null) {
+            type = 0;
             jedisPool.close();
         }
     }
