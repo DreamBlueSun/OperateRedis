@@ -20,6 +20,15 @@ public class RedisConfig {
     @Value("${redis.timeout}")
     private int timeout;
 
+    @Value("${jedisCluder.connectionTimeout}")
+    private int connectionTimeout;
+
+    @Value("${jedisCluder.soTimeout}")
+    private int soTimeout;
+
+    @Value("${jedisCluder.maxAttempts}")
+    private int maxAttempts;
+
     @Bean
     public JedisPoolConfig jedisPoolConfig() {
         JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
@@ -27,10 +36,23 @@ public class RedisConfig {
         jedisPoolConfig.setMinIdle(minIdle);
         jedisPoolConfig.setMaxTotal(maxTotal);
         jedisPoolConfig.setMaxWaitMillis(timeout);
+        jedisPoolConfig.setTestOnBorrow(true);
         return jedisPoolConfig;
     }
 
     public int getTimeout() {
         return timeout;
+    }
+
+    public int getConnectionTimeout() {
+        return connectionTimeout;
+    }
+
+    public int getSoTimeout() {
+        return soTimeout;
+    }
+
+    public int getMaxAttempts() {
+        return maxAttempts;
     }
 }

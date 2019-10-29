@@ -49,6 +49,14 @@ public class OperateRedisController {
         }
         return ReturnValueConstant.CONNECT_FAILD;
     }
+    @RequestMapping("/connectCluster/{host}/{port}")
+    public String connectCluster(@PathVariable String host, @PathVariable int port) {
+//        boolean connect = connectHelper.connectCluster(host, port, null);
+//        if (connect) {
+//            return ReturnValueConstant.CONNECT_SUCCESS;
+//        }
+        return ReturnValueConstant.CONNECT_FAILD;
+    }
 
     /**
      * @return java.lang.String

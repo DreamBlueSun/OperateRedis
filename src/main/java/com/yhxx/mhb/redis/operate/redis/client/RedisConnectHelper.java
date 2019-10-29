@@ -4,9 +4,9 @@ import com.yhxx.mhb.redis.operate.redis.config.RedisConfig;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.*;
+
+import java.io.IOException;
 
 /**
  * @description:
@@ -25,23 +25,22 @@ public class RedisConnectHelper {
 
     private JedisPool jedisPool;
 
+    private JedisCluster jedisCluster;
+
+    private int type = 0;
+
     private final String PONG = "PONG";
+
+    private final String TEST_CONNECTIVITY = "TEST_CONNECTIVITY";
 
     public boolean connect(String host, int port, String password) {
         setJedisPool(host, port, password);
-        Jedis jedis = null;
-        try {
-            jedis = getJedis();
-            String pong = jedis.ping();
-            if (StringUtils.equals(pong, PONG)) {
-                return true;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            closeJedis(jedis);
+        if (jedisConnectedSuccess()) {
+            return true;
+        } else {
+            setJedisCluster(host, port, password);
+            return jedisCluderConnectedSuccess();
         }
-        return false;
     }
 
     private void setJedisPool(String host, int port, String password) {
@@ -50,15 +49,72 @@ public class RedisConnectHelper {
         } else {
             jedisPool = new JedisPool(jedisPoolConfig, host, port, redisConfig.getTimeout(), password);
         }
+        type = 1;
+    }
+
+    private void setJedisCluster(String host, int port, String password) {
+        HostAndPort hostAndPort = new HostAndPort(host, port);
+        if (StringUtils.isBlank(password)) {
+            JedisCluster jedisCluster = new JedisCluster(hostAndPort, redisConfig.getConnectionTimeout(),
+                    redisConfig.getSoTimeout(), redisConfig.getMaxAttempts(), jedisPoolConfig);
+            this.jedisCluster = jedisCluster;
+        } else {
+            JedisCluster jedisCluster = new JedisCluster(hostAndPort, redisConfig.getConnectionTimeout(),
+                    redisConfig.getSoTimeout(), redisConfig.getMaxAttempts(), password, jedisPoolConfig);
+            this.jedisCluster = jedisCluster;
+        }
+        type = 2;
+    }
+
+    private boolean jedisConnectedSuccess() {
+        Jedis jedis = null;
+        try {
+            jedis = getJedis();
+            if (StringUtils.equals(jedis.ping(), PONG)) {
+                return true;
+            } else {
+                closeJedisPool();
+                return false;
+            }
+        } catch (Exception e) {
+            closeJedisPool();
+            return false;
+        } finally {
+            closeJedis(jedis);
+        }
+    }
+
+    private boolean jedisCluderConnectedSuccess() {
+        try {
+            jedisCluster.get(TEST_CONNECTIVITY);
+            return true;
+        } catch (Exception e) {
+            closeJedisCluder();
+            return false;
+        }
     }
 
     public Jedis getJedis() {
         return jedisPool.getResource();
     }
 
+    public JedisCluster getJedisCluster() {
+        return jedisCluster;
+    }
+
     public void closeJedis(Jedis jedis) {
         if (jedis != null) {
             jedis.close();
+        }
+    }
+
+    public void closeJedisCluder() {
+        if (jedisCluster != null) {
+            try {
+                jedisCluster.close();
+            } catch (IOException e) {
+                jedisCluster = null;
+            }
         }
     }
 

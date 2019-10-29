@@ -3,3 +3,8 @@ redis:
   minIdle: 100
   maxTotal: 2048
   timeout: 10000
+
+jedisCluder:
+  connectionTimeout: 1000
+  soTimeout: 5000
+  maxAttempts: 3
