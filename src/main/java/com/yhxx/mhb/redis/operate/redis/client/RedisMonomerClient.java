@@ -8,7 +8,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class RedisOperationHelper {
+public class RedisMonomerClient {
 
     public static String set(String key, String value, Jedis jedis) {
         return jedis.set(key, value);
@@ -30,15 +30,19 @@ public class RedisOperationHelper {
         Class<?> aClass = object.getClass();
         Field[] fields = aClass.getDeclaredFields();
         for (Field field : fields) {
-            SkipRedis annotation = field.getAnnotation(SkipRedis.class);//只要变量上面有这个注解,就略过
+            //只要变量上面有这个注解,就略过
+            SkipRedis annotation = field.getAnnotation(SkipRedis.class);
             if (annotation != null) {
                 continue;
             }
-            String name = field.getName();//变量的名字,也就是我们等会向redis中放的fieldname
+            //变量的名字,也就是我们等会向redis中放的fieldname
+            String name = field.getName();
             try {
-                PropertyDescriptor propertyDescriptor = new PropertyDescriptor(name, aClass);//在指定的类中查找执行的属性名
+                //在指定的类中查找执行的属性名
+                PropertyDescriptor propertyDescriptor = new PropertyDescriptor(name, aClass);
                 if (propertyDescriptor != null) {
-                    Method readMethod = propertyDescriptor.getReadMethod();//获取get方法
+                    //获取get方法
+                    Method readMethod = propertyDescriptor.getReadMethod();
                     if (readMethod != null) {
                         Object result = readMethod.invoke(object);
                         if (result != null) {
@@ -70,11 +74,13 @@ public class RedisOperationHelper {
             Field[] fields = clazz.getDeclaredFields();
             for (Field field : fields) {
                 //根据属性名去redis中找值
-                String fieldName = field.getName();//按照我们的存的规则.这个就是redis只给中hash的field
+                //按照我们的存的规则.这个就是redis只给中hash的field
+                String fieldName = field.getName();
                 String result = hGet(key, fieldName, jedis);
                 if (result != null) {
                     //找到值就赋值进去
-                    PropertyDescriptor propertyDescriptor = new PropertyDescriptor(fieldName, clazz);//在指定的类中查找执行的属性名
+                    //在指定的类中查找执行的属性名
+                    PropertyDescriptor propertyDescriptor = new PropertyDescriptor(fieldName, clazz);
                     if (propertyDescriptor != null) {
                         Method writeMethod = propertyDescriptor.getWriteMethod();
                         if (writeMethod != null) {
@@ -108,4 +114,5 @@ public class RedisOperationHelper {
     public static Long hDel(String key, String[] fields, Jedis jedis) {
         return jedis.hdel(key, fields);
     }
+
 }

@@ -8,6 +8,10 @@ package com.yhxx.mhb.redis.operate.constant;
 public interface ReturnValueConstant {
 
     /**
+     * 操作开发中
+     */
+    String DEVELOPING = "操作开发中";
+    /**
      * 操作成功
      */
     String SUCCESS = "成功";

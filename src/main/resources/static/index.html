@@ -8,9 +8,9 @@
 </head>
 <body>
 <div id="div_connect">
-    <input type="text" id="host">
-    <input type="text" id="port">
-    <input type="text" id="password">
+    host：<input type="text" id="host"><br/>
+    port：<input type="text" id="port"><br/>
+    password(选填)：<input type="password" id="password"><br/>
     <button type="button" id="connect">connect</button>
 </div>
 <div id="div_disconnect" style="display: none">
@@ -25,6 +25,10 @@
     $("#connect").click(function () {
         var host = nextPath + $("#host").val();
         var port = nextPath + $("#port").val();
+        if (host.length < 2 || port.length < 2) {
+            alert("未填写host或port");
+            return;
+        }
         var password = nextPath + $("#password").val();
         var url = pathHead + "operateRedis/connect" + host + port + password;
         $.ajax({
