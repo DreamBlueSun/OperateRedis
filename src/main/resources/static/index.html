@@ -4,21 +4,69 @@
     <meta charset="UTF-8">
     <title>OperateRedis</title>
     <script type="text/javascript" src="js/jquery-3.4.0.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap-table.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap-table-zh-CN.js"></script>
     <script type="text/javascript" src="js/path.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/index.css"/>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.css"/>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-table.css"/>
 </head>
 <body>
-<div id="div_connect">
-    host：<input type="text" id="host"><br/>
-    port：<input type="text" id="port"><br/>
-    password(选填)：<input type="password" id="password"><br/>
-    <button type="button" id="connect">connect</button>
-</div>
-<div id="div_disconnect" style="display: none">
-    <button type="button" id="disconnect">disconnect</button>
-</div>
-<div id="div_operation" style="display: none">
-    <input type="text" id="key">
-    <button type="button" id="get">get</button>
+<div class="container body-div">
+    <div class="row clearfix">
+        <div id="div_left" class="col-md-6">
+            OR
+            <div id="div_table" style="display: none">
+                <table id="keysTable"></table>
+            </div>
+        </div>
+        <div id="div_right" class="col-md-6">
+            <div id="div_connect" class="col-md-12" style="display: none">
+                <div class="col-md-12 form-group">
+                    <label class="col-md-2 for-form-control">Host：</label>
+                    <div class="col-md-5">
+                        <input type="text" id="host" class="form-control">
+                    </div>
+                    <label class="col-md-2 for-form-control">Port：</label>
+                    <div class="col-md-3">
+                        <input type="text" id="port" class="form-control">
+                    </div>
+                </div>
+                <div class="col-md-12 form-group">
+                    <label class="col-md-3 for-form-control">Password：</label>
+                    <div class="col-md-9">
+                        <input type="password" id="password" class="form-control" placeholder="选填">
+                    </div>
+                </div>
+                <div class="col-md-12 form-group">
+                    <button type="button" id="connect" class="btn btn-block btn-primary btn-default">Connect</button>
+                </div>
+            </div>
+            <div id="div_operation" class="col-md-12">
+                <div id="div_disconnect" class="col-md-4 form-group">
+                    <button type="button" id="disconnect" class="btn btn-default btn-danger btn-block">Disconnect
+                    </button>
+                </div>
+                <div id="div_get" class="col-md-8 form-group">
+                    <button type="button" id="keys" class="btn btn-default btn-primary btn-block">ShowKeyList</button>
+                </div>
+                <div class="col-md-12 form-group">
+                    <div class="col-md-9">
+                        <input type="text" id="key" class="form-control" placeholder="输入要查询的key">
+                    </div>
+                    <div class="col-md-3">
+                        <button type="button" id="get" class="btn btn-default btn-primary btn-block">get</button>
+                    </div>
+                </div>
+                <div id="div_value" class="col-md-12 form-group jumbotron column" style="height: 466px">
+                    <textarea id="text_value">
+
+                    </textarea>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 </body>
 <script type="text/javascript">
@@ -38,7 +86,6 @@
                 alert(data);
                 if (data == "连接成功") {
                     $("#div_connect").hide();
-                    $("#div_disconnect").show();
                     $("#div_operation").show();
                 }
             }
@@ -52,14 +99,47 @@
             success: function (data) {
                 alert(data);
                 if (data == "成功") {
-                    $("#div_disconnect").hide();
+                    $("#div_table").hide();
                     $("#div_operation").hide();
                     $("#div_connect").show();
                 }
             }
         });
     });
-
+    $("#keys").click(function () {
+        $('#keysTable').bootstrapTable('destroy');
+        $("#div_table").show();
+        $("#keysTable").bootstrapTable({
+            url: pathHead + "operateRedis/keySet",
+            method: "get",
+            dataType: "json",
+            cache: false, /**设置False禁用AJAX请求的缓存。*/
+            height: 560, /**表格的高度*/
+            striped: true, /**使表格带有条纹*/
+            pagination: true, /**表格展示样式奇偶行*/
+            pageSize: 10, /**分页的时候设置每页的条数*/
+            pageList: [10, 20], /**分页的时候设置分页数的列表*/
+            search: true, /**显示搜索框*/
+            smartDisplay: true, /**设置为True智能显示分页或者Card View*/
+            showRefresh: false, /**显示刷新按钮*/
+            sidePagination: 'client', /**定义表格分页的位置，只能是“client”（客户端）和“server”（服务器端）*/
+            formatLoadingMessage: function () {
+                return "请稍等，正在加载中...";
+            },
+            formatNoMatches: function () {
+                return '没有KEY';
+            },
+            columns: [
+                {
+                    checkbox: true
+                },
+                {
+                    field: "key",
+                    title: "KEY",
+                    align: 'center'
+                }]
+        });
+    });
     $("#get").click(function () {
         var key = nextPath + $("#key").val();
         var url = pathHead + "operateRedis/get" + key;
@@ -67,7 +147,7 @@
             url: url,
             type: "GET",
             success: function (data) {
-                alert(data);
+                $("#text_value").text(data);
             }
         });
     });

@@ -1,15 +1,35 @@
 package com.yhxx.mhb.redis.operate.redis.client;
 
 import com.yhxx.mhb.redis.operate.redis.annotation.SkipRedis;
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisCluster;
+import redis.clients.jedis.JedisPool;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.TreeSet;
 
 public class RedisClusterClient {
+
+    public static TreeSet<String> keys(JedisCluster jedisCluster) {
+        TreeSet<String> keys = new TreeSet<>();
+        Map<String, JedisPool> clusterNodes = jedisCluster.getClusterNodes();
+        for (String nodeKey : clusterNodes.keySet()) {
+            JedisPool jedisPool = clusterNodes.get(nodeKey);
+            Jedis jedis = jedisPool.getResource();
+            try {
+                keys.addAll(jedis.keys("*"));
+            } catch (Exception e) {
+            } finally {
+                jedis.close();
+            }
+        }
+        return keys;
+    }
 
     public static String set(String key, String value, JedisCluster jedisCluster) {
         return jedisCluster.set(key, value);

@@ -1,6 +1,7 @@
-package com.yhxx.mhb.redis.operate.Controller;
+package com.yhxx.mhb.redis.operate.controller;
 
 import com.yhxx.mhb.redis.operate.constant.ReturnValueConstant;
+import com.yhxx.mhb.redis.operate.entity.RedisKey;
 import com.yhxx.mhb.redis.operate.redis.performer.RedisConnectPerformer;
 import com.yhxx.mhb.redis.operate.redis.performer.RedisOperatePerformer;
 import org.apache.commons.lang.StringUtils;
@@ -9,8 +10,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
 /**
- * @PackageName: com.yhxx.mhb.demo.Controller
+ * @PackageName: com.yhxx.mhb.demo.controller
  * @Description:
  * @auther: maohangbin
  * @Date: 2019/7/9 17:03
@@ -63,6 +69,23 @@ public class OperateRedisController {
     public String disconnect() {
         connectPerformer.disconnect();
         return ReturnValueConstant.SUCCESS;
+    }
+
+    @RequestMapping("/keySet")
+    public List<RedisKey> keySet() {
+        Set<String> keySet;
+        try {
+            keySet = operatePerformer.keys();
+        } catch (Exception e) {
+            keySet = new TreeSet<>();
+        }
+        List<RedisKey> redisKeyList = new ArrayList<>();
+        for (String key : keySet) {
+            RedisKey redisKey = new RedisKey();
+            redisKey.setKey(key);
+            redisKeyList.add(redisKey);
+        }
+        return redisKeyList;
     }
 
     /**

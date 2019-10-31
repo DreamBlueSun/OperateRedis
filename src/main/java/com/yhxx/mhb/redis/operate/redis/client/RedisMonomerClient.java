@@ -7,8 +7,13 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Set;
 
 public class RedisMonomerClient {
+
+    public static Set<String> keys(Jedis jedis) {
+        return jedis.keys("*");
+    }
 
     public static String set(String key, String value, Jedis jedis) {
         return jedis.set(key, value);

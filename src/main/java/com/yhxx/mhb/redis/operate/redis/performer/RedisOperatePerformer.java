@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisCluster;
 
+import java.util.TreeSet;
+
 /**
  * @description:
  * @auther: MaoHangBin
@@ -20,6 +22,28 @@ public class RedisOperatePerformer {
 
     @Autowired
     private RedisConnectPerformer connectPerformer;
+
+    public TreeSet<String> keys() {
+        TreeSet<String> keys = new TreeSet<>();
+        int type = connectPerformer.getType();
+        if (type == RedisConstant.REDIS_TYPE_MONOMER) {
+            Jedis jedis = connectPerformer.getJedis();
+            try {
+                keys.addAll(RedisMonomerClient.keys(jedis));
+            } catch (Exception e) {
+            } finally {
+                connectPerformer.closeJedis(jedis);
+            }
+        }
+        if (type == RedisConstant.REDIS_TYPE_CLUSTER) {
+            JedisCluster jedisCluster = connectPerformer.getJedisCluster();
+            try {
+                keys.addAll(RedisClusterClient.keys(jedisCluster));
+            } catch (Exception e) {
+            }
+        }
+        return keys;
+    }
 
     public String set(String key, String value) {
         return ReturnValueConstant.DEVELOPING;
