@@ -8,9 +8,10 @@
     <script type="text/javascript" src="js/bootstrap-table.min.js"></script>
     <script type="text/javascript" src="js/bootstrap-table-zh-CN.js"></script>
     <script type="text/javascript" src="js/path.js"></script>
-    <link rel="stylesheet" type="text/css" href="css/index.css"/>
+    <script type="text/javascript" src="js/index.js"></script>
     <link rel="stylesheet" type="text/css" href="css/bootstrap.css"/>
     <link rel="stylesheet" type="text/css" href="css/bootstrap-table.css"/>
+    <link rel="stylesheet" type="text/css" href="css/index.css"/>
 </head>
 <body>
 <div class="container body-div">
@@ -60,96 +61,11 @@
                     </div>
                 </div>
                 <div id="div_value" class="col-md-12 form-group jumbotron column" style="height: 466px">
-                    <textarea id="text_value">
-
-                    </textarea>
+                    <textarea id="text_value" style="width: 100%; height: 100%; resize: none"></textarea>
                 </div>
             </div>
         </div>
     </div>
 </div>
 </body>
-<script type="text/javascript">
-    $("#connect").click(function () {
-        var host = nextPath + $("#host").val();
-        var port = nextPath + $("#port").val();
-        if (host.length < 2 || port.length < 2) {
-            alert("未填写host或port");
-            return;
-        }
-        var password = nextPath + $("#password").val();
-        var url = pathHead + "operateRedis/connect" + host + port + password;
-        $.ajax({
-            url: url,
-            type: "GET",
-            success: function (data) {
-                alert(data);
-                if (data == "连接成功") {
-                    $("#div_connect").hide();
-                    $("#div_operation").show();
-                }
-            }
-        });
-    });
-    $("#disconnect").click(function () {
-        var url = pathHead + "operateRedis/disconnect";
-        $.ajax({
-            url: url,
-            type: "GET",
-            success: function (data) {
-                alert(data);
-                if (data == "成功") {
-                    $("#div_table").hide();
-                    $("#div_operation").hide();
-                    $("#div_connect").show();
-                }
-            }
-        });
-    });
-    $("#keys").click(function () {
-        $('#keysTable').bootstrapTable('destroy');
-        $("#div_table").show();
-        $("#keysTable").bootstrapTable({
-            url: pathHead + "operateRedis/keySet",
-            method: "get",
-            dataType: "json",
-            cache: false, /**设置False禁用AJAX请求的缓存。*/
-            height: 560, /**表格的高度*/
-            striped: true, /**使表格带有条纹*/
-            pagination: true, /**表格展示样式奇偶行*/
-            pageSize: 10, /**分页的时候设置每页的条数*/
-            pageList: [10, 20], /**分页的时候设置分页数的列表*/
-            search: true, /**显示搜索框*/
-            smartDisplay: true, /**设置为True智能显示分页或者Card View*/
-            showRefresh: false, /**显示刷新按钮*/
-            sidePagination: 'client', /**定义表格分页的位置，只能是“client”（客户端）和“server”（服务器端）*/
-            formatLoadingMessage: function () {
-                return "请稍等，正在加载中...";
-            },
-            formatNoMatches: function () {
-                return '没有KEY';
-            },
-            columns: [
-                {
-                    checkbox: true
-                },
-                {
-                    field: "key",
-                    title: "KEY",
-                    align: 'center'
-                }]
-        });
-    });
-    $("#get").click(function () {
-        var key = nextPath + $("#key").val();
-        var url = pathHead + "operateRedis/get" + key;
-        $.ajax({
-            url: url,
-            type: "GET",
-            success: function (data) {
-                $("#text_value").text(data);
-            }
-        });
-    });
-</script>
 </html>
