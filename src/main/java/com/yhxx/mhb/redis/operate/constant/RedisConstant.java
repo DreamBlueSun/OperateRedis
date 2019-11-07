@@ -22,4 +22,30 @@ public interface RedisConstant {
      * Redis类型：集群
      */
     int REDIS_TYPE_CLUSTER = 2;
+
+    /**
+     * Redis数据类型：String
+     */
+    String DATA_TYPE_STRING = "string";
+
+    /**
+     * Redis数据类型：hash
+     */
+    String DATA_TYPE_HASH = "hash";
+
+    /**
+     * Redis数据类型：list
+     */
+    String DATA_TYPE_LIST = "list";
+
+    /**
+     * Redis数据类型：set
+     */
+    String DATA_TYPE_SET = "set";
+
+    /**
+     * Redis数据类型：zset
+     */
+    String DATA_TYPE_ZSET = "zset";
+
 }

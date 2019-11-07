@@ -59,7 +59,7 @@ public class RedisOperatePerformer {
         if (type == RedisConstant.REDIS_TYPE_MONOMER) {
             Jedis jedis = connectPerformer.getJedis();
             try {
-                result = RedisMonomerClient.get(key, jedis);
+                result = RedisMonomerClient.getByType(key, jedis);
             } catch (Exception e) {
                 result = ReturnValueConstant.OPERATION_EXCEPTION;
             } finally {
@@ -69,7 +69,7 @@ public class RedisOperatePerformer {
         if (type == RedisConstant.REDIS_TYPE_CLUSTER) {
             JedisCluster jedisCluster = connectPerformer.getJedisCluster();
             try {
-                result = RedisClusterClient.get(key, jedisCluster);
+                result = RedisClusterClient.getByType(key, jedisCluster);
             } catch (Exception e) {
                 result = ReturnValueConstant.OPERATION_EXCEPTION;
             }
